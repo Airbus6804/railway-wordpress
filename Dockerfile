@@ -22,10 +22,11 @@ RUN echo "post_max_size = $SIZE_LIMIT" >> /usr/local/etc/php/php.ini
 
 # Keep the default WordPress document root at /var/www/html (no override needed)
 
-# Copy and setup entrypoint script (fixes MPM at runtime - Railway re-enables modules)
+# Preserve the original WordPress entrypoint and wrap it to tweak Apache MPM
+RUN mv /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint-original.sh
 
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-CMD ["/usr/local/bin/docker-entrypoint.sh"]
+# Use the default CMD from the base image (apache2-foreground via the entrypoint)
